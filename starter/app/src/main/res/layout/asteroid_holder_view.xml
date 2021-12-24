@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+<data>
+
+  <variable
+    name="Asteroid"
+    type="com.udacity.asteroidradar.Asteroid" />
+</data>
+<com.google.android.material.card.MaterialCardView
+  android:layout_width="match_parent"
+
+  android:layout_margin="8dp"
+  android:layout_height="wrap_content">
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:background="@color/app_background"
+
+    android:layout_height="wrap_content">
+
+    <TextView
+      android:text="AsteroidId"
+      android:id="@+id/asteroid_id"
+      android:layout_width="0dp"
+      android:textColor="@color/default_text_color"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      app:layout_constraintEnd_toStartOf="@+id/isHazard_img"
+      app:layout_constraintStart_toStartOf="parent"
+      android:layout_marginEnd="16dp"
+      android:layout_marginLeft="16dp"
+      android:layout_marginTop="16dp"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+      android:text="@{Asteroid.closeApproachDate}"
+      android:id="@+id/asteroid_date"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:textColor="@color/text_grey"
+      android:layout_marginRight="16dp"
+      app:layout_constraintStart_toStartOf="@+id/asteroid_id"
+      app:layout_constraintEnd_toStartOf="@id/isHazard_img"
+      app:layout_constraintBottom_toBottomOf="parent"
+      android:layout_marginBottom="16dp"
+      />
+
+    <ImageView
+      android:id="@+id/isHazard_img"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="16dp"
+      android:contentDescription="TODO"
+      android:src="@drawable/ic_status_normal"
+      android:background="@color/app_background"
+      app:layout_constraintBottom_toBottomOf="@+id/asteroid_date"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/asteroid_id"></ImageView>
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>
+</layout>
