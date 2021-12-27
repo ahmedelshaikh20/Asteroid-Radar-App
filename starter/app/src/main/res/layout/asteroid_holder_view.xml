@@ -20,7 +20,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-      android:text="AsteroidId"
+      android:text="AsteroidID"
       android:id="@+id/asteroid_id"
       android:layout_width="0dp"
       android:textColor="@color/default_text_color"
