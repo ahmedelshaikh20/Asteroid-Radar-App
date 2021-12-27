@@ -1,6 +1,9 @@
 package com.udacity.asteroidradar.main
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,7 +16,10 @@ import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.api.service
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.security.auth.callback.Callback
+import kotlin.collections.ArrayList
 
 class MainViewModel : ViewModel() {
 
@@ -38,22 +44,42 @@ class MainViewModel : ViewModel() {
 
   }
 
+
   fun getAllAsteroids(){
-
-
     viewModelScope.launch {
       try {
-
-
-    var List = service.FetchAsteroids(Constants.API_KEY)
-      Log.i("NetworkAteroid" , List.toString() )}
+        val formattedDate =getNextSevenDaysFormattedDates()
+        val start_date = formattedDate[0]
+        val end_date = formattedDate[formattedDate.size-1]
+    var List = service.FetchAsteroids( start_date , end_date , Constants.API_KEY )
+        Log.i("NetworkAteroid" ,List.body().toString())
+        var  lol = parseAsteroidsJsonResult(JSONObject(List.body().toString()))
+        Log.i("lol" ,lol.toString() )
+      }
       catch (e :Throwable){
 e.printStackTrace()
       }
-
     }
+
+
+
+
   }
 
+  @SuppressLint("NewApi")
+  private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
+    val formattedDateList = ArrayList<String>()
+
+    val calendar = Calendar.getInstance()
+    for (i in 0..Constants.DEFAULT_END_DATE_DAYS) {
+      val currentTime = calendar.time
+      val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+      formattedDateList.add(dateFormat.format(currentTime))
+      calendar.add(Calendar.DAY_OF_YEAR, 1)
+    }
+
+    return formattedDateList
+  }
 
 
 
