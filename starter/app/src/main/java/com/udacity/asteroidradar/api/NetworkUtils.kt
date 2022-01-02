@@ -1,14 +1,13 @@
 package com.udacity.asteroidradar.api
 
 import android.annotation.SuppressLint
-import android.util.Log
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.model.ImgOfTheDay
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.reflect.typeOf
 
 fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
     val nearEarthObjectsJson = jsonResult.getJSONObject("near_earth_objects")
@@ -40,15 +39,31 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
     return asteroidList
 }
 
+
+fun parseImageofTheDay(jsonresult : JSONObject):ImgOfTheDay{
+
+  val img_copyright = jsonresult.getString("copyright")
+  val img_date = jsonresult.getString("date")
+  val img_explanation = jsonresult.getString("explanation")
+  val img_hdurl = jsonresult.getString("hdurl")
+  val img_media_type = jsonresult.getString("media_type")
+  val img_service_version = jsonresult.getString("service_version")
+  val img_url = jsonresult.getString("url")
+  val img_title = jsonresult.getString("title")
+
+return ImgOfTheDay(img_copyright , img_date , img_explanation , img_hdurl , img_media_type , img_service_version , img_url,img_title)
+
+}
+
 @SuppressLint("NewApi")
 private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     val formattedDateList = ArrayList<String>()
     val calendar = Calendar.getInstance()
     for (i in 0..Constants.DEFAULT_END_DATE_DAYS) {
-        val currentTime = calendar.time
+      val currentTime = calendar.time
       val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-        formattedDateList.add(dateFormat.format(currentTime))
-        calendar.add(Calendar.DAY_OF_YEAR, 1)
+      formattedDateList.add(dateFormat.format(currentTime))
+      calendar.add(Calendar.DAY_OF_YEAR, 1)
     }
     return formattedDateList
 }

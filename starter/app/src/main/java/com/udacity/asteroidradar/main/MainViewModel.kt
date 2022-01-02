@@ -1,87 +1,117 @@
 package com.udacity.asteroidradar.main
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
-import com.squareup.moshi.Json
+import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.Database.AsteroidRepositry
+import com.udacity.asteroidradar.Database.asDomainModel
+import com.udacity.asteroidradar.Database.getInstance
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
+import com.udacity.asteroidradar.api.parseImageofTheDay
 import com.udacity.asteroidradar.api.service
+import com.udacity.asteroidradar.model.ImgOfTheDay
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import javax.security.auth.callback.Callback
 import kotlin.collections.ArrayList
 
-class MainViewModel : ViewModel() {
+@RequiresApi(Build.VERSION_CODES.O)
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
+  private val database = getInstance(application.applicationContext)
+  private val AsteroidRepository = AsteroidRepositry(database)
 
   private var _asteroid = MutableLiveData<Asteroid>()
   val asteroid : LiveData<Asteroid>
   get() = _asteroid
 
 
-  private var _asteroids = MutableLiveData<List<Asteroid>>()
-  val asteroids : LiveData<List<Asteroid>>
-  get() = _asteroids
+
+
+
+
+
+
+  private val _navigateToSelectedAsteroid = MutableLiveData<Asteroid>()
+
+  val navigateToSelectedAsteroid: LiveData<Asteroid>
+    get() = _navigateToSelectedAsteroid
+
+
+  private val _imageDay = MutableLiveData<ImgOfTheDay>()
+  val imageDay : LiveData<ImgOfTheDay>
+  get() = _imageDay
+
+  val asteroids = AsteroidRepository.asteroids
+
+
+
+
+
 
   init {
-    val asteroid = Asteroid(12,"lol","25/11/2020",432.0,645.0,124.0,368.0,true)
-    val list = listOf(asteroid)
-
-    getAllAsteroids()
-    //var NetworkAsteroid = parseAsteroidsJsonResult()
-    _asteroids.value = list
 
 
+    viewModelScope.launch {
+      AsteroidRepository.refreshAsteroids()
+
+
+    }
+    getImageOfTheDay()
   }
 
-
-  fun getAllAsteroids(){
+  private fun getImageOfTheDay() {
     viewModelScope.launch {
       try {
-        val formattedDate =getNextSevenDaysFormattedDates()
-        val start_date = formattedDate[0]
-        val end_date = formattedDate[formattedDate.size-1]
-    var List = service.FetchAsteroids( start_date , end_date , Constants.API_KEY )
-        Log.i("NetworkAteroid" ,List.body().toString())
-        var  lol = parseAsteroidsJsonResult(JSONObject(List.body().toString()))
-        Log.i("lol" ,lol.toString() )
-      }
-      catch (e :Throwable){
-e.printStackTrace()
+
+
+        var StringRespnse = service.FetchImgOfTheDay(Constants.API_KEY)
+        var imageoftheday = parseImageofTheDay(JSONObject(StringRespnse.body().toString()))
+        _imageDay.value = imageoftheday;
+
+      }catch (e : Exception){
+        e.printStackTrace()
       }
     }
-
-
-
-
   }
 
-  @SuppressLint("NewApi")
-  private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
-    val formattedDateList = ArrayList<String>()
+ fun UpdateAsteroidsList (type :String){
+   viewModelScope.launch {
 
-    val calendar = Calendar.getInstance()
-    for (i in 0..Constants.DEFAULT_END_DATE_DAYS) {
-      val currentTime = calendar.time
-      val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
-      formattedDateList.add(dateFormat.format(currentTime))
-      calendar.add(Calendar.DAY_OF_YEAR, 1)
-    }
+     Log.i("FromMainModel" , type)
 
-    return formattedDateList
+  AsteroidRepository.getAsteroids(type)}
+}
+  fun DisplayAsteroidDetail(asteroid: Asteroid){
+    _navigateToSelectedAsteroid.value = asteroid;
+  }
+
+
+  fun DisplayAsteroidDetailCompleted(asteroid: Asteroid){
+    _navigateToSelectedAsteroid.value = null;
   }
 
 
 
+
+
+
+  class Factory(val app: Application) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST")
+        return MainViewModel(app) as T
+      }
+      throw IllegalArgumentException("Unable to construct viewmodel")
+    }
+  }
 
 }

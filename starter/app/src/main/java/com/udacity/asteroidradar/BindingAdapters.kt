@@ -1,10 +1,14 @@
 package com.udacity.asteroidradar
 
 import android.util.Log
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.udacity.asteroidradar.main.AsteroidsAdapter
 
 @BindingAdapter("statusIcon")
@@ -16,12 +20,28 @@ fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
     }
 }
 
-@BindingAdapter("listData")
-fun bindAsteroid(recyclerView: RecyclerView , data : List<Asteroid>){
-  val adapter = recyclerView.adapter as AsteroidsAdapter
-  Log.i("bbm" , data.toString())
-  adapter.submitList(data)
+@BindingAdapter("imgofthedayurl")
+fun bindImgoftheDay(imageView: ImageView , url :String?){
+  url?.let {
+    val imgUri = it.toUri().buildUpon().scheme("https").build()
+    Glide.with(imageView.context)
+      .load(imgUri)
+      .into(imageView)
+  }
 
+}
+
+
+@BindingAdapter("listData")
+fun bindAsteroid(recyclerView: RecyclerView , data : List<Asteroid>?){
+  if (!data.isNullOrEmpty()) {
+    recyclerView.visibility= VISIBLE
+    val adapter = recyclerView.adapter as AsteroidsAdapter
+    adapter.submitList(data)
+  } else
+  {
+recyclerView.visibility=GONE
+  }
 }
 
 @BindingAdapter("asteroidStatusImage")

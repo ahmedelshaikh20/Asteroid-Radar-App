@@ -1,6 +1,8 @@
 package com.udacity.asteroidradar.api
 
+import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.Database.DatabaseAsteroid
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -24,11 +26,36 @@ var retrofit = Retrofit.Builder()
   .build()
 
   interface NasaService {
-    @GET("feed")
+    @GET("neo/rest/v1/feed")
     suspend fun FetchAsteroids( @Query("start_date") start_date: String,@Query("end_date") end_date: String , @Query("api_key") apiKey: String ): Response<String>
+
+    @GET("planetary/apod")
+    suspend fun FetchImgOfTheDay(@Query("api_key") apiKey: String ): Response<String>
+
+
   }
+
+
 
 
 var  service : NasaService = retrofit.create(NasaService::class.java)
 
 
+
+
+
+fun List<Asteroid>.asDatabaseModel():Array<DatabaseAsteroid>{
+  return  map{
+    DatabaseAsteroid(
+      id = it.id,
+      codename = it.codename,
+      closeApproachDate = it.closeApproachDate,
+      absoluteMagnitude = it.absoluteMagnitude,
+      estimatedDiameter = it.estimatedDiameter,
+      relativeVelocity = it.relativeVelocity,
+      distanceFromEarth = it.distanceFromEarth,
+      isPotentiallyHazardous = it.isPotentiallyHazardous
+    )
+  }.toTypedArray()
+
+}
