@@ -33,13 +33,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
   val asteroid : LiveData<Asteroid>
   get() = _asteroid
 
-
-
-
-
-
-
-
   private val _navigateToSelectedAsteroid = MutableLiveData<Asteroid>()
 
   val navigateToSelectedAsteroid: LiveData<Asteroid>
@@ -50,20 +43,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
   val imageDay : LiveData<ImgOfTheDay>
   get() = _imageDay
 
-  val asteroids = AsteroidRepository.asteroids
+  //val asteroids = AsteroidRepository.asteroids
 
-
-
+  val asteroids : LiveData<List<Asteroid>>?
+    get() = AsteroidRepository.asteroids
 
 
 
   init {
-
-
     viewModelScope.launch {
       AsteroidRepository.refreshAsteroids()
-
-
     }
     getImageOfTheDay()
   }
@@ -72,10 +61,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     viewModelScope.launch {
       try {
 
-
         var StringRespnse = service.FetchImgOfTheDay(Constants.API_KEY)
         var imageoftheday = parseImageofTheDay(JSONObject(StringRespnse.body().toString()))
-        _imageDay.value = imageoftheday;
+        if(imageoftheday.media_type == "image"){
+        _imageDay.value = imageoftheday;}
+        else _imageDay.value = null;
 
       }catch (e : Exception){
         e.printStackTrace()

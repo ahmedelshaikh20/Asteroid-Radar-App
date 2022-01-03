@@ -28,7 +28,6 @@ class AsteroidRepositry (val database : AsteroidDatabase) {
 
 
   suspend fun getAsteroids(type : String) {
-    Log.i("Gone Throught Today" , type)
 
     when(type){
       "day" -> {GetDayAsteroids(getNextSevenDaysFormattedDates().get(0))}
@@ -38,7 +37,6 @@ class AsteroidRepositry (val database : AsteroidDatabase) {
   }
 
   fun GetDayAsteroids(date:String) {
-    Log.i("Gone Throught Today" , date)
 
     asteroids = Transformations.map(database.asteroidDao.getAsteroidByDates(date)) {
       it?.asDomainModel()
@@ -58,14 +56,13 @@ suspend fun refreshAsteroids(){
     val start_date = getNextSevenDaysFormattedDates().get(0)
     val last_date = getNextSevenDaysFormattedDates().get(7)
     val asteroidsStringResponse = async {  service.FetchAsteroids(start_date , last_date , Constants.API_KEY)}
-    Log.i("Yeees" ,asteroidsStringResponse.await().body().toString())
 
     val listAsteroids = async {  parseAsteroidsJsonResult(JSONObject(asteroidsStringResponse.await().body())) }
-    Log.i("Yeees" ,"Done To DataBase")
 
     database.asteroidDao.insertAll(*listAsteroids.await().asDatabaseModel())
-    Log.i("Yeees" ,"Done To DataBase")
-
+    asteroids =Transformations.map(database.asteroidDao.getAll() ,{
+      it?.asDomainModel()
+    })
   }
 }
 

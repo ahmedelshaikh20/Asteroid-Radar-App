@@ -10,13 +10,18 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 
 //To Debug our Request
 val interceptor = HttpLoggingInterceptor().apply {
   this.level = HttpLoggingInterceptor.Level.BODY
 };
-val client = OkHttpClient().newBuilder().addInterceptor(interceptor).build()
-//
+val client = OkHttpClient()
+  .newBuilder()
+  .connectTimeout(1 , TimeUnit.MINUTES)
+  .addInterceptor(interceptor)
+  .build()
+
 
 
 var retrofit = Retrofit.Builder()

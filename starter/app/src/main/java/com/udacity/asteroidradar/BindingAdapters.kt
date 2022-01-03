@@ -22,11 +22,14 @@ fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
 
 @BindingAdapter("imgofthedayurl")
 fun bindImgoftheDay(imageView: ImageView , url :String?){
+  if (!url.isNullOrEmpty()){
   url?.let {
     val imgUri = it.toUri().buildUpon().scheme("https").build()
     Glide.with(imageView.context)
       .load(imgUri)
       .into(imageView)
+  }}else {
+    imageView.setImageResource(R.drawable.placeholder_picture_of_day)
   }
 
 }
