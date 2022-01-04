@@ -18,7 +18,7 @@ val interceptor = HttpLoggingInterceptor().apply {
 };
 val client = OkHttpClient()
   .newBuilder()
-  .connectTimeout(1 , TimeUnit.MINUTES)
+  .connectTimeout(2 , TimeUnit.MINUTES)
   .addInterceptor(interceptor)
   .build()
 

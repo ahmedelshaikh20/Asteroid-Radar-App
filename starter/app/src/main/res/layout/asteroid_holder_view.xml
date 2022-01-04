@@ -23,6 +23,7 @@
       android:text="@{Asteroid.codename}"
       android:id="@+id/asteroid_name"
       android:layout_width="0dp"
+      android:contentDescription="Code Name"
       android:textColor="@color/default_text_color"
       android:layout_height="wrap_content"
       android:layout_marginStart="16dp"
@@ -36,6 +37,7 @@
     <TextView
       android:text="@{Asteroid.closeApproachDate}"
       android:id="@+id/asteroid_date"
+      android:contentDescription="@string/close_approach_data_title"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:textColor="@color/text_grey"
@@ -51,7 +53,6 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_margin="16dp"
-      android:contentDescription="TODO"
       app:statusIcon="@{Asteroid.potentiallyHazardous}"
       android:src="@drawable/ic_status_normal"
       android:background="@color/app_background"

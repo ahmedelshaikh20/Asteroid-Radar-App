@@ -15,6 +15,8 @@ fun getAll():LiveData<List<DatabaseAsteroid>>
 fun getAsteroidByDates(date :String?):LiveData<List<DatabaseAsteroid>>
 @Insert
 fun insertAsteroid(databaseAsteroid: DatabaseAsteroid)
+@Query("SELECT * FROM DatabaseAsteroid a WHERE a.closeApproachDate IN (:currentWeekList)")
+fun getAsteroidsOfWeek(currentWeekList : List<String>):LiveData<List<DatabaseAsteroid>>
 @Query("DELETE  FROM DatabaseAsteroid")
 fun clearDatabase()
 @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -78,7 +78,9 @@ lateinit var  adapter :AsteroidsAdapter;
         adapter.submitList(it)
 
       })
-        return true
+
+
+      return true
     }}
 //  private fun checkForInternet(context: Context): Boolean {
 //

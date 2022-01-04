@@ -1,73 +1,69 @@
 package com.udacity.asteroidradar.Database
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
-import com.udacity.asteroidradar.api.NasaService
 import com.udacity.asteroidradar.api.asDatabaseModel
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.api.service
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
-class AsteroidRepositry (val database : AsteroidDatabase) {
+class AsteroidRepositry(val database: AsteroidDatabase) {
 
-  var asteroids :LiveData<List<Asteroid>>? =
-    Transformations.map(database.asteroidDao.getAll() ,{
-    it?.asDomainModel()
-  })
-
-
-  suspend fun getAsteroids(type : String) {
-
-    when(type){
-      "day" -> {GetDayAsteroids(getNextSevenDaysFormattedDates().get(0))}
-      "saved" -> {GetAllAsteroids()}
-      "All" -> {refreshAsteroids()}
-    }
-  }
-
-  fun GetDayAsteroids(date:String) {
-
-    asteroids = Transformations.map(database.asteroidDao.getAsteroidByDates(date)) {
+  var asteroids: LiveData<List<Asteroid>>? =
+    Transformations.map(database.asteroidDao.getAll()) {
       it?.asDomainModel()
     }
 
-  }
 
-   fun GetAllAsteroids(){
-    asteroids =Transformations.map(database.asteroidDao.getAll() ,{
+  suspend fun getAsteroids(forceNetwork: Boolean = false) {
+    if (forceNetwork || asteroids?.value.isNullOrEmpty()) {
+      refreshAsteroids()
+    }
+
+  }
+  fun getSaved(){
+     asteroids =
+      Transformations.map(database.asteroidDao.getAll()) {
+        it?.asDomainModel()
+      }
+  }
+  fun getByWeek(){
+
+    asteroids =
+    Transformations.map(database.asteroidDao.getAsteroidsOfWeek(getNextSevenDaysFormattedDates())) {
       it?.asDomainModel()
-    })
+    }
+  }
+  fun getToday(){
+    asteroids =
+      Transformations.map(database.asteroidDao.getAsteroidByDates(getNextSevenDaysFormattedDates().get(0))) {
+        it?.asDomainModel()
+      }
   }
 
-suspend fun refreshAsteroids(){
-  withContext(Dispatchers.IO){
 
-    val start_date = getNextSevenDaysFormattedDates().get(0)
-    val last_date = getNextSevenDaysFormattedDates().get(7)
-    val asteroidsStringResponse = async {  service.FetchAsteroids(start_date , last_date , Constants.API_KEY)}
-
-    val listAsteroids = async {  parseAsteroidsJsonResult(JSONObject(asteroidsStringResponse.await().body())) }
-
-    database.asteroidDao.insertAll(*listAsteroids.await().asDatabaseModel())
-    asteroids =Transformations.map(database.asteroidDao.getAll() ,{
-      it?.asDomainModel()
-    })
+  private suspend fun refreshAsteroids() {
+    withContext(Dispatchers.IO) {
+      val start_date = getNextSevenDaysFormattedDates().get(0)
+      val last_date = getNextSevenDaysFormattedDates().get(7)
+      val asteroidsStringResponse =
+        async { service.FetchAsteroids(start_date, last_date, Constants.API_KEY) }
+      val listAsteroids =
+        async { parseAsteroidsJsonResult(JSONObject(asteroidsStringResponse.await().body())) }
+      database.asteroidDao.insertAll(*listAsteroids.await().asDatabaseModel())
+    }
   }
+
+
 }
 
-
-}
 private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
   val formattedDateList = ArrayList<String>()
   val calendar = Calendar.getInstance()

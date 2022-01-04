@@ -22,16 +22,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/activity_main_image_of_the_day"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-              app:imgofthedayurl="@{viewModel.imageDay.url}"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/placeholder_picture_of_day"/>
+          <ImageView
+            android:id="@+id/activity_main_image_of_the_day"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/image_of_the_day"
+            android:scaleType="centerCrop"
+            app:imgofthedayurl="@{viewModel.imageDay.url}"
+            app:srcCompat="@drawable/placeholder_picture_of_day" />
 
-            <TextView
+          <TextView
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
