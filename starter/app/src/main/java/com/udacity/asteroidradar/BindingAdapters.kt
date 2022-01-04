@@ -10,6 +10,7 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.udacity.asteroidradar.main.AsteroidsAdapter
+import com.udacity.asteroidradar.model.ImgOfTheDay
 
 @BindingAdapter("statusIcon")
 fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
@@ -21,10 +22,11 @@ fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
 }
 
 @BindingAdapter("imgofthedayurl")
-fun bindImgoftheDay(imageView: ImageView , url :String?){
-  if (!url.isNullOrEmpty()){
-  url?.let {
-    val imgUri = it.toUri().buildUpon().scheme("https").build()
+fun bindImgoftheDay(imageView: ImageView , imageDay: ImgOfTheDay?){
+  if (imageDay?.media_type=="image"){
+  imageDay?.let {
+    val imgUri = it.url.toUri().buildUpon().scheme("https").build()
+    imageView.contentDescription= imageDay.title
     Glide.with(imageView.context)
       .load(imgUri)
       .into(imageView)

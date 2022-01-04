@@ -42,16 +42,12 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
 
 fun parseImageofTheDay(jsonresult : JSONObject):ImgOfTheDay{
 
-  val img_copyright = jsonresult.getString("copyright")
-  val img_date = jsonresult.getString("date")
-  val img_explanation = jsonresult.getString("explanation")
-  val img_hdurl = jsonresult.getString("hdurl")
+
   val img_media_type = jsonresult.getString("media_type")
-  val img_service_version = jsonresult.getString("service_version")
   val img_url = jsonresult.getString("url")
   val img_title = jsonresult.getString("title")
 
-return ImgOfTheDay(img_copyright , img_date , img_explanation , img_hdurl , img_media_type , img_service_version , img_url,img_title)
+return ImgOfTheDay( img_media_type,img_url,img_title)
 
 }
 
